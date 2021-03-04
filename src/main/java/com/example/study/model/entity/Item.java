@@ -23,6 +23,14 @@ public class Item {
 
     private String content;
 
+    // LAZY = 지연 로딩, EAGER = 즉시 로딩
+
+    // LAZY = SELECT * FROM item WHERE id = ?
+
+    // EAGER =  //연관관계가 있는 모든 테이블에 조인을 해서 데이터를 가져옴 > 1:1, 1:N에 추천
+    // item_id = order_detail.item_id
+    // user_id = order_detail.user_id
+    // where item.id = ?
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
     private List<OrderDetail> orderDetailList;
 

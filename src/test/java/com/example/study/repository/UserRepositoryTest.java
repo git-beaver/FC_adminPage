@@ -32,7 +32,7 @@ public class UserRepositoryTest extends StudyApplicationTests {
     @Test
     @Transactional
     public void read() {
-        Optional<User> user = userRepository.findById(7L);
+        Optional<User> user = userRepository.findByAccount("Heezzi");
 
         user.ifPresent(selectUser -> {
 
