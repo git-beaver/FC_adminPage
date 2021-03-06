@@ -12,33 +12,23 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor //기본 생성자
+@Data
 @Entity
-@ToString(exclude = "orderGroupList")
+@ToString(exclude = "partnerList")
 @EntityListeners(AuditingEntityListener.class)
-@Builder //원하는 매개변수만을 가진 생성자 만듦
-@Accessors(chain = true) //이미 생성된 객체에 대해 setter 해줌
-public class User { //DB table 이름과 동일하게
+@Builder
+@Accessors(chain = true)
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String account;
+    private String type;
 
-    private String password;
-
-    private String status;
-
-    private String email;
-
-    private String phoneNumber;
-
-    private LocalDateTime registeredAt;
-
-    private LocalDateTime unregisteredAt;
+    private String title;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -52,7 +42,7 @@ public class User { //DB table 이름과 동일하게
     @LastModifiedBy
     private String updatedBy;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<OrderGroup> orderGroupList;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
+    private List<Partner> partnerList;
 
 }

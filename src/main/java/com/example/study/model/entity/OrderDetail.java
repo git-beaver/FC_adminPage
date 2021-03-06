@@ -1,30 +1,55 @@
 package com.example.study.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity //order_detail
-@ToString(exclude = {"user", "item"}) //서로 상호참조하는 연관관계가 있는 변수는 exclude 해주어야함
+@ToString(exclude = {"orderGroup", "item"})
+@EntityListeners(AuditingEntityListener.class)
+@Builder
+@Accessors(chain = true)
 public class OrderDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime orderAt;
+    private String status;
 
-    @ManyToOne // N:1
-    private User user; //user로 설정하면 알아서 userId를 찾아감
+    private LocalDateTime arrivalDate;
+
+    private int quantity;
+
+    private BigDecimal totalPrice;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @CreatedBy
+    private String createdBy;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @LastModifiedBy
+    private String updatedBy;
 
     @ManyToOne
     private Item item;
+
+    @ManyToOne
+    private OrderGroup orderGroup;
 
 }

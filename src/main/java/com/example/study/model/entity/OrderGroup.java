@@ -1,5 +1,6 @@
 package com.example.study.model.entity;
 
+
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -9,36 +10,41 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor //기본 생성자
+@Data
 @Entity
-@ToString(exclude = "orderGroupList")
+@ToString(exclude = {"user", "orderDetailList"})
 @EntityListeners(AuditingEntityListener.class)
-@Builder //원하는 매개변수만을 가진 생성자 만듦
-@Accessors(chain = true) //이미 생성된 객체에 대해 setter 해줌
-public class User { //DB table 이름과 동일하게
+@Builder
+@Accessors(chain = true)
+public class OrderGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String account;
-
-    private String password;
-
     private String status;
 
-    private String email;
+    private String orderType; //주문 형태 = 일괄 / 개별
 
-    private String phoneNumber;
+    private String revAddress;
 
-    private LocalDateTime registeredAt;
+    private String revName;
 
-    private LocalDateTime unregisteredAt;
+    private String paymentType; //카드 / 현금
+
+    private BigDecimal totalPrice;
+
+    private int totalQuantity;
+
+    private LocalDateTime orderAt;
+
+    private LocalDateTime arrivalDate;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -52,7 +58,10 @@ public class User { //DB table 이름과 동일하게
     @LastModifiedBy
     private String updatedBy;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<OrderGroup> orderGroupList;
+    @ManyToOne
+    private User user;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderGroup")
+    private List<OrderDetail> orderDetailList;
 
 }

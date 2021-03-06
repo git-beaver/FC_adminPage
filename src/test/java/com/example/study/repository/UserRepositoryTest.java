@@ -13,69 +13,63 @@ import java.util.Optional;
 
 public class UserRepositoryTest extends StudyApplicationTests {
 
-    @Autowired //Dependency Injection(의존성 주입) 직접 객체를 만들지 않고 객체를 스프링이 직접 관리하고 주입해주는 것 > new 이런거 안쓰고 자동으로 됨
+    @Autowired
     private UserRepository userRepository;
 
     @Test
     public void create() {
+        String account = "Test03";
+        String password = "Test03";
+        String status = "REGISTERED";
+        String email = "Test01@gmail.com";
+        String phoneNumber = "010-1111-3333";
+        LocalDateTime registeredAt = LocalDateTime.now();
+        LocalDateTime createdAt = LocalDateTime.now();
+        
+        //@Builder를 통해 생성자 없이 해당 매개변수를 갖는 객체 생성
+        User u = User.builder().account(account).password(password).status(status).email(email).build();
+        //@Accessors(chain = true)를 통해 동시에 set 가능
+        User us = new User().setAccount(account).setPassword(password);
+
         User user = new User();
-        user.setAccount("Heezzi");
-        user.setEmail("heezzi@gmail.com");
-        user.setPhoneNumber("010-1111-2222");
-        user.setCreatedAt(LocalDateTime.now());
-        user.setCreatedBy("heezzi");
+        user.setAccount(account);
+        user.setPassword(password);
+        user.setStatus(status);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+        user.setRegisteredAt(registeredAt);
 
         User newUser = userRepository.save(user);
-        System.out.println("newUser : " + newUser);
+        Assertions.assertNotNull(newUser);
+
     }
 
     @Test
     @Transactional
     public void read() {
-        Optional<User> user = userRepository.findByAccount("Heezzi");
+        User user = userRepository.findFirstByPhoneNumberOrderByIdDesc("010-1111-2222");
 
-        user.ifPresent(selectUser -> {
+        user.getOrderGroupList().stream().forEach(orderGroup -> {
+            System.out.println("-------------주문묶음-------------");
+            System.out.println("수령인 : " + orderGroup.getRevName());
+            System.out.println("수령지 : " + orderGroup.getRevAddress());
+            System.out.println("총금액 : " + orderGroup.getTotalPrice());
+            System.out.println("총수량 : " + orderGroup.getTotalQuantity());
 
-            selectUser.getOrderDetailList().stream().forEach(detail -> {
-                Item item = detail.getItem();
-                System.out.println(detail.getItem());
+            System.out.println("-------------주문상세-------------");
+            orderGroup.getOrderDetailList().forEach(orderDetail -> {
+                System.out.println("파트너사 이름 : " + orderDetail.getItem().getPartner().getName());
+                System.out.println("파트너사 카테고리 : " + orderDetail.getItem().getPartner().getCategory());
+                System.out.println("주문 상품 : " + orderDetail.getItem().getName());
+                System.out.println("고객센터 번호 : " + orderDetail.getItem().getPartner().getCallCenter());
+                System.out.println("주문 상태 : " + orderDetail.getStatus());
+                System.out.println("도착예정일자 : " + orderDetail.getArrivalDate());
+
+
             });
-
-        });
-    }
-
-    @Test
-    public void update() { //특정 user를 찾고, ID가 존재하는지 찾고, 업데이트를 진행
-        Optional<User> user = userRepository.findById(3L);
-
-        user.ifPresent(selectUser -> {
-            selectUser.setAccount("PPPP");
-            selectUser.setUpdatedAt(LocalDateTime.now());
-            selectUser.setUpdatedBy("update method()");
-
-            userRepository.save(selectUser); //이미 존재하는 ID가 있을 때 그 값을 변경하면 새로운 유저가 아닌 update를 해줌
-        });
-    }
-
-    /*@DeleteMapping("/api/user")
-    public void delete(@RequestParam Long id) {
-
-    }*/
-
-    @Test
-    @Transactional //테스트이기에 쿼리는 실행하지만 데이터는 그대로 남기기 위해 다시 rollback을 해줌
-    public void delete() {
-        Optional<User> user = userRepository.findById(1L);
-
-        Assertions.assertTrue(user.isPresent()); //값이 있어야 delete를 하니까 값이 있어야한다는 의미
-
-        user.ifPresent(selectUser -> {
-            userRepository.delete(selectUser);
         });
 
-        Optional<User> deleteUser = userRepository.findById(1L);
-
-        Assertions.assertFalse(deleteUser.isPresent()); //delete를 했으면 값이 없어야하기에 false여야한다는 의미
+        Assertions.assertNotNull(user);
 
     }
 

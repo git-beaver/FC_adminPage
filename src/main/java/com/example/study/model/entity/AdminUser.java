@@ -1,6 +1,9 @@
 package com.example.study.model.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,17 +13,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Data
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor //기본 생성자
+@Data
 @Entity
-@ToString(exclude = "orderGroupList")
 @EntityListeners(AuditingEntityListener.class)
-@Builder //원하는 매개변수만을 가진 생성자 만듦
-@Accessors(chain = true) //이미 생성된 객체에 대해 setter 해줌
-public class User { //DB table 이름과 동일하게
+@Builder
+@Accessors(chain = true)
+public class AdminUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +33,13 @@ public class User { //DB table 이름과 동일하게
 
     private String status;
 
-    private String email;
+    private String role;
 
-    private String phoneNumber;
+    private LocalDateTime lastLoginAt;
+
+    private LocalDateTime passwordUpdatedAt;
+
+    private int loginFailCount;
 
     private LocalDateTime registeredAt;
 
@@ -43,7 +48,7 @@ public class User { //DB table 이름과 동일하게
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @CreatedBy
+    @CreatedBy //LUAA.java에서 설정된 이름으로 적용됨
     private String createdBy;
 
     @LastModifiedDate
@@ -51,8 +56,5 @@ public class User { //DB table 이름과 동일하게
 
     @LastModifiedBy
     private String updatedBy;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<OrderGroup> orderGroupList;
 
 }
