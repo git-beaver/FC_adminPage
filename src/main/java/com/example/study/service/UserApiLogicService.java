@@ -9,10 +9,14 @@ import com.example.study.model.network.response.UserApiResponse;
 import com.example.study.repository.UserRepository;
 import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResponse, User> {
@@ -55,6 +59,8 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
 
         return baseRepository.findById(id)
                 .map(user -> response(user))
+                //.map(userApiResponse -> Header.OK(userApiResponse))
+                //.map(Header::OK)
                 .orElseGet(
                         ()->Header.ERROR("데이터 없음")
                 );
@@ -82,6 +88,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
         })
         .map(user -> baseRepository.save(user))  // update -> update된 새 유저 번환
         .map(updateUser -> response(updateUser)) //userApiResponse
+        //.map(Header::OK)
         .orElseGet(()->Header.ERROR("데이터 없음"));
 
     }
@@ -113,7 +120,16 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 .unregisteredAt(user.getUnregisteredAt())
                 .build();
 
-        //Header + data return
         return Header.OK(userApiResponse);
     }
+
+/*    public Header<List<UserApiResponse>> search(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+
+        List<UserApiResponse> userApiResponseList = users.stream()
+                .map(user -> response(user))
+                .collect(Collectors.toList());
+
+        return Header.OK(userApiResponseList);
+    }*/
 }
